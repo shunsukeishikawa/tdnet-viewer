@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDnet Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0;
+            background-color: white;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            min-height: 0;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            width: 50%;
+            background-color: #f8f9fa;
+            border-left: 1px solid #ddd;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .right-panel.show {
+            display: block;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="date"] {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        button {
+            padding: 8px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .error {
+            color: #dc3545;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+        }
+        
+        .success {
+            color: #155724;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+        }
+        
+        .table-container {
+            margin-top: 20px;
+            overflow: auto;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .time-col { width: 80px; }
+        .code-col { width: 80px; }
+        .company-col { width: 150px; }
+        .title-col { width: 350px; }
+        .exchange-col { width: 80px; }
+        .pdf-col { width: 60px; }
+        .summary-col { width: 80px; }
+        
+        .pdf-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .pdf-link:hover {
+            text-decoration: underline;
+        }
+        
+        .summary-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .summary-btn:hover {
+            background-color: #218838;
+        }
+        
+        .summary-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .summary-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        .summary-panel-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        
+        .close-panel-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+        }
+        
+        .close-panel-btn:hover {
+            color: #333;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+        }
+        
+        .summary-loading {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+        }
+        
+        .summary-content-panel {
+            line-height: 1.6;
+        }
+        
+        .summary-text {
+            line-height: 1.6;
+            font-family: 'Hiragino Kaku Gothic Pro', 'ヒラギノ角ゴ Pro W3', Meiryo, メイリオ, Osaka, 'MS PGothic', arial, helvetica, sans-serif;
+        }
+        
+        /* Markdown styling */
+        .summary-text h1,
+        .summary-text h2,
+        .summary-text h3 {
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .summary-text h2 {
+            font-size: 18px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        
+        .summary-text h3 {
+            font-size: 16px;
+            color: #555;
+        }
+        
+        .summary-text ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .summary-text li {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+        
+        .summary-text p {
+            margin: 10px 0;
+        }
+        
+        .summary-text strong {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .summary-text code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .summary-text blockquote {
+            border-left: 4px solid #007bff;
+            margin: 15px 0;
+            padding-left: 15px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .summary-text hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        
+        .date-info {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Include Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <div class="container">
+        <h1>TDnet Information Viewer</h1>
+        
+        <div class="form-group">
+            <label for="dateInput">Select Date:</label>
+            <input type="date" id="dateInput" value="2025-06-11">
+            <button onclick="fetchData()" id="fetchBtn">Get TDnet Data</button>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            Loading TDnet data...
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="success" class="success" style="display: none;"></div>
+        
+        <div class="main-content">
+            <!-- Left Panel - Table -->
+            <div class="left-panel">
+                <div id="results" class="table-container" style="display: none;">
+                    <div class="date-info" id="dateInfo"></div>
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th class="time-col">Time</th>
+                                <th class="code-col">Code</th>
+                                <th class="company-col">Company</th>
+                                <th class="title-col">Title</th>
+                                <th class="exchange-col">Exchange</th>
+                                <th class="pdf-col">PDF</th>
+                                <th class="summary-col">Summary</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Summary -->
+            <div id="summaryPanel" class="right-panel">
+                <div class="summary-panel-header">
+                    <h2 id="summaryTitle" class="summary-panel-title">Document Summary</h2>
+                    <button class="close-panel-btn" onclick="closeSummaryPanel()">&times;</button>
+                </div>
+                <div id="summaryLoading" class="summary-loading" style="display: none;">
+                    <p>Downloading PDF and generating summary...</p>
+                    <p style="font-size: 14px; color: #666;">This may take a few moments.</p>
+                </div>
+                <div id="summaryText" class="summary-text summary-content-panel"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const dateInput = document.getElementById('dateInput');
+            const dateValue = dateInput.value;
+            
+            if (!dateValue) {
+                showError('Please select a date');
+                return;
+            }
+            
+            // Convert date format from YYYY-MM-DD to YYYYMMDD
+            const formattedDate = dateValue.replace(/-/g, '');
+            
+            // Show loading state
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('success').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('fetchBtn').disabled = true;
+            
+            try {
+                const response = await fetch('/api/tdnet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ date: formattedDate })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayData(result.data, dateValue, result.count);
+                    showSuccess(`Successfully loaded ${result.count} records`);
+                } else {
+                    showError(result.error || 'Failed to fetch data');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('fetchBtn').disabled = false;
+            }
+        }
+        
+        function displayData(data, date, count) {
+            const tableBody = document.getElementById('tableBody');
+            const dateInfo = document.getElementById('dateInfo');
+            
+            // Clear previous data
+            tableBody.innerHTML = '';
+            
+            // Set date info
+            dateInfo.textContent = `TDnet disclosures for ${date} (${count} records)`;
+            
+            // Populate table
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.time}</td>
+                    <td>${row.code}</td>
+                    <td title="${row.company_name}">${row.company_name}</td>
+                    <td title="${row.title}">${row.title}</td>
+                    <td>${row.stock_exchange}</td>
+                    <td>${row.pdf_url ? `<a href="${row.pdf_url}" target="_blank" class="pdf-link">PDF</a>` : ''}</td>
+                    <td>${row.pdf_url ? `<button class="summary-btn" onclick="generateSummary('${row.pdf_url}', '${row.title.replace(/'/g, "\\'")}', ${index})">要約</button>` : ''}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+            
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+        
+        // Allow Enter key to trigger fetch
+        document.getElementById('dateInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchData();
+            }
+        });
+        
+        // Generate summary function
+        async function generateSummary(pdfUrl, title, rowIndex) {
+            const summaryBtn = document.querySelector(`button[onclick*="generateSummary('${pdfUrl}'"]`);
+            const originalText = summaryBtn.textContent;
+            
+            // Show side panel and loading state
+            document.getElementById('summaryPanel').classList.add('show');
+            document.getElementById('summaryTitle').textContent = title;
+            document.getElementById('summaryLoading').style.display = 'block';
+            document.getElementById('summaryText').innerHTML = '';
+            
+            // Disable button
+            summaryBtn.disabled = true;
+            summaryBtn.textContent = '処理中...';
+            
+            try {
+                const response = await fetch('/api/summary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        pdfUrl: pdfUrl,
+                        title: title
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Render markdown to HTML
+                    const htmlContent = marked.parse(result.summary);
+                    document.getElementById('summaryText').innerHTML = htmlContent;
+                } else {
+                    document.getElementById('summaryText').innerHTML = `<p style="color: red;">エラー: ${result.error}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('summaryText').innerHTML = `<p style="color: red;">ネットワークエラー: ${error.message}</p>`;
+            } finally {
+                document.getElementById('summaryLoading').style.display = 'none';
+                summaryBtn.disabled = false;
+                summaryBtn.textContent = originalText;
+            }
+        }
+        
+        // Close summary panel
+        function closeSummaryPanel() {
+            document.getElementById('summaryPanel').classList.remove('show');
+        }
+        
+        // Load data for default date on page load
+        window.addEventListener('load', function() {
+            fetchData();
+        });
+    </script>
+</body>
+</html>
