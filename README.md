@@ -29,7 +29,7 @@ For intelligent AI summaries, you'll need a Google Gemini API key:
    ```
 3. Edit `.env` and add your API key:
    ```
-   GEMINI_API_KEY=AIzaSyABC123-your-actual-api-key-here
+   GEMINI_API_KEY=your-actual-api-key-here
    ```
 
 ### 3. Start the Application

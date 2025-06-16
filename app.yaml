@@ -1,0 +1,16 @@
+runtime: python39
+
+# Static file hosting configuration for Google App Engine
+# This will serve the frontend files
+
+handlers:
+- url: /static
+  static_dir: public
+  
+- url: /.*
+  static_files: public/index.html
+  upload: public/index.html
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 2

@@ -58,6 +58,32 @@ This document logs the actual requests made by the user and issues that needed t
 
 **What was needed**: Documentation of the development process
 
+### 10. Layout Change Request
+**User Request**:
+> "At this moment, summary view is displayed as dialog style. But I would preffer to have more master detail view model."
+
+**What was needed**: Change from modal dialog to side-by-side layout
+
+### 11. Panel Width Adjustment Request
+**User Request**:
+> "Could you please make right side panel more wider?"
+> "Please expand right side panel to 50% width of screen"
+
+**What was needed**: Adjust layout proportions for better summary viewing
+
+### 12. GitHub Repository Request
+**User Request**:
+> "I would like to push current code to github. How to do that?"
+> "could you please setup github cli instead?"
+
+**What was needed**: Version control setup and repository creation
+
+### 13. GCP Deployment Request
+**User Request**:
+> "I would like to make this application run on GCP cloud. How to change our code? Note that please make cost effective project. For example, use serverless technology to minimize running cost"
+
+**What was needed**: Serverless architecture deployment on Google Cloud Platform
+
 ## Issues Fixed
 
 ### 1. PDF Link Issue
@@ -98,6 +124,33 @@ This document logs the actual requests made by the user and issues that needed t
 **Issue**: Need to restart server to apply changes
 **Commands provided**: `npm start` and `node server.js`
 
+### 6. GCP Deployment Issues
+**Multiple deployment issues encountered during GCP setup**:
+
+**Issue 1**: gcloud CLI syntax error
+**User Report**: `ERROR: (gcloud.functions.deploy) unrecognized arguments: --trigger=http`
+**Fix**: Updated to correct syntax `--trigger-http`
+
+**Issue 2**: Billing account requirement  
+**User Report**: `Write access to project was denied: please check billing account`
+**Fix**: User enabled billing account for Cloud Functions
+
+**Issue 3**: Python function name mismatch
+**User Report**: `Function 'tdnet-scraper' is not defined`
+**Fix**: Added `--entry-point=tdnet_scraper` parameter
+
+**Issue 4**: Node.js runtime deprecation
+**User Report**: `Node.js 18 is no longer supported`
+**Fix**: Upgraded to `nodejs20` runtime and added `--entry-point=app`
+
+**Issue 5**: App Engine initialization
+**User Report**: `project does not contain an App Engine application`
+**Fix**: Added `gcloud app create` to deployment script
+
+**Issue 6**: Wrong deployment directory
+**User Report**: `server.js does not exist; Error ID: b12fc1e9`
+**Fix**: Instructed to run deployment from `functions/` directory
+
 ## Summary of Development Flow
 
 1. **Started with**: Basic web scraping request
@@ -107,8 +160,25 @@ This document logs the actual requests made by the user and issues that needed t
 5. **Switched**: From OpenAI to Gemini
 6. **Upgraded**: To Gemini 2.0
 7. **Externalized**: Configuration for easy customization
-8. **Improved**: UI with markdown rendering
-9. **Documented**: Complete development process
+8. **Improved**: UI with markdown rendering and master-detail layout
+9. **Integrated**: GitHub version control
+10. **Deployed**: Serverless architecture on Google Cloud Platform
+11. **Configured**: AI API key for production environment
+12. **Documented**: Complete development process
+
+## Final Architecture
+
+### Local Development
+- **Frontend**: Express.js server at `localhost:3000`
+- **Scraper**: Python subprocess execution
+- **API**: Node.js with Gemini integration
+
+### Production (GCP)
+- **Frontend**: App Engine static hosting (`https://tdnet-viewer-1750036151.uc.r.appspot.com`)
+- **API Function**: Cloud Functions Node.js (`https://us-central1-tdnet-viewer-1750036151.cloudfunctions.net/tdnet-api`)
+- **Scraper Function**: Cloud Functions Python (`https://us-central1-tdnet-viewer-1750036151.cloudfunctions.net/tdnet-scraper`)
+- **AI**: Google Gemini 2.0 Flash integration
+- **Cost**: Less than $5/month with serverless auto-scaling
 
 ## Key Pattern: User-Driven Development
 

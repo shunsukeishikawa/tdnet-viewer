@@ -1,0 +1,21 @@
+{
+  "name": "tdnet-viewer-functions",
+  "version": "1.0.0",
+  "description": "TDnet Viewer Cloud Functions",
+  "main": "index.js",
+  "scripts": {
+    "start": "functions-framework --target=app",
+    "deploy": "gcloud functions deploy tdnet-api --runtime=nodejs20 --trigger-http --allow-unauthenticated --memory=512MB --timeout=540s --entry-point=app",
+    "deploy-scraper": "gcloud functions deploy tdnet-scraper --runtime=python39 --trigger-http --allow-unauthenticated --memory=512MB --timeout=540s"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "@google/generative-ai": "^0.2.1",
+    "axios": "^1.6.0",
+    "pdf-parse": "^1.1.1",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": ["serverless", "tdnet", "cloud-functions"],
+  "author": "",
+  "license": "MIT"
+}

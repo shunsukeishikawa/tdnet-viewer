@@ -382,7 +382,11 @@
             document.getElementById('fetchBtn').disabled = true;
             
             try {
-                const response = await fetch('/api/tdnet', {
+                const API_BASE_URL = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:3000' 
+                    : 'https://us-central1-tdnet-viewer-1750036151.cloudfunctions.net/tdnet-api';
+                
+                const response = await fetch(`${API_BASE_URL}/api/tdnet`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -469,7 +473,11 @@
             summaryBtn.textContent = '処理中...';
             
             try {
-                const response = await fetch('/api/summary', {
+                const API_BASE_URL = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:3000' 
+                    : 'https://us-central1-tdnet-viewer-1750036151.cloudfunctions.net/tdnet-api';
+                
+                const response = await fetch(`${API_BASE_URL}/api/summary`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

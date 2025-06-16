@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "deploy": "./deploy.sh",
+    "logs": "gcloud functions logs read tdnet-api --region=us-central1",
+    "logs-scraper": "gcloud functions logs read tdnet-scraper --region=us-central1"
   },
   "keywords": ["tdnet", "scraper", "financial", "disclosure"],
   "author": "",

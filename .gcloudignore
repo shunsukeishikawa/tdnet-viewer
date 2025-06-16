@@ -1,0 +1,17 @@
+# This file specifies files that are *not* uploaded to Google Cloud
+# when you deploy your application. It works like .gitignore but for deployment.
+
+.gcloudignore
+.git
+.gitignore
+README.md
+node_modules
+npm-debug.log
+.nyc_output
+.env
+*.log
+functions/
+scraper-function/
+server.js
+web_scraper.py
+prompts.json
